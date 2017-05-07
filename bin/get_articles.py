@@ -39,10 +39,10 @@ for url_line in url_lines:
   for post in d.entries:
     post_link = post.link.split("=")[-1]
     if post.title in log_title.keys():
-      print post.title, "already present in log. Ignored."
+      #print post.title, "already present in log. Ignored."
       continue
     if post_link in log_url.keys():
-      print post_link, "already present in log. Ignored."
+      #print post_link, "already present in log. Ignored."
       continue
     #print post.title + ": " + post_link
     output = keyword + "~" + post.title + "~" + post_link + "\n"

@@ -81,7 +81,10 @@ def write_to_facebook(handle, text, upload_link_url):
       print text
       print upload_link_url
       get_char = raw_input("Publish? ")
-      if get_char == 'y':
+      if get_char == 'y' or get_char == 't':
+          if get_char == 't':
+              text = raw_input("New title: ")
+              text = text.strip()
           print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)
           path_string = "%s/feed" % page_id
           page_graph = GraphAPI(page_access_token)
