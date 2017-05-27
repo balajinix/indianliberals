@@ -56,56 +56,61 @@ except:
   print "File not found: %s" % (upload_history_file)
         
   
-def write_to_facebook(handle, text, upload_link_url):
+def write_to_facebook(handle, page_name, page_id, text, upload_link_url):
   global access_token
   graph = GraphAPI(access_token)
-  response = graph.get("/264547013954814/accounts")
-  pages = response['data']
+  #response = graph.get("/264547013954814/accounts")
+  #pages = response['data']
+  #print pages
   count = 0
-  for page in pages:
-    page_name = page['name']
-    output = page_name + "|" + handle + "|"
-    if (page_name != handle):
-      continue
-    page_id = page['id']
-    #if page_id in upload_hash:
-      #continue
-    page_access_token = page['access_token']
+  #for page in pages:
+  #if (page_name != page['name']):
+  #  continue
+  #page_id = page['id']
+  #if page_id in upload_hash:
+    #continue
+  response = graph.get("/" + page_id + "/?fields=access_token")
+  page_access_token = response['access_token']
+  #print page_name + '\t' + page_id + '\t' + page_access_token
+  #if debug is True and page_name != 'LSPK Media Team':
+  #    continue
+  r = ''
+  try:
     #print page_name + '\t' + page_id + '\t' + page_access_token
-    #if debug is True and page_name != 'LSPK Media Team':
-    #    continue
-    r = ''
-    try:
-      #print page_name + '\t' + page_id + '\t' + page_access_token
-      print page_name
-      print text
-      print upload_link_url
-      get_char = raw_input("Publish? ")
-      if get_char == 'y' or get_char == 't':
-          if get_char == 't':
-              text = raw_input("New title: ")
-              text = text.strip()
-          print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)
-          path_string = "%s/feed" % page_id
-          page_graph = GraphAPI(page_access_token)
-          r = page_graph.post(path=path_string, link=upload_link_url, name=text)
-          #r = page_graph.post(path=path_string, source=source1) #link=upload_link_url, name="test") #, caption="Loksatta Revelation - June 9th, 1 pm, Press Club, Cubbon Park")
-          link_id = r['id'] 
-          print 'Success: posted link with id: ' + link_id
-  
-          count += 1
-          sleep_interval = randint(1,3)
-          time.sleep(sleep_interval)
-          if (count > 200):
-            break
-  
-      else:
-          continue
-      upload_hash[page_id] = link_id
-    except:
-      print "Unexpected error:", sys.exc_info()
-      sys.exit()
-      #dump_file()
+    print page_name
+    print text
+    print upload_link_url
+    get_char = raw_input("Publish? ")
+    if get_char == 'y' or get_char == 't':
+        if get_char == 't':
+            text = raw_input("New title: ")
+            text = text.strip()
+        print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)
+        path_string = "%s/feed" % page_id
+        page_graph = GraphAPI(page_access_token)
+        r = page_graph.post(path=path_string, link=upload_link_url, name=text)
+        link_id = r['id'] 
+        print 'Success: posted link with id: ' + link_id
+        # write to a file as well
+        tweet_file = "../output/" + handle + ".txt"
+        tf = open(tweet_file, "a+")
+        try:
+            output = text + "~" + upload_link_url + "\n"
+            tf.write(output)
+            tf.close()
+        except:
+            print "Exception writing to file ", handle, ".txt"
+            tf.close()
+        count += 1
+        sleep_interval = randint(1,3)
+        time.sleep(sleep_interval)
+        if (count > 200):
+          return
+    #upload_hash[page_id] = link_id
+  except:
+    print "Unexpected error:", sys.exc_info()
+    sys.exit()
+    #dump_file()
 
   #copyfile(upload_history_file, upload_history_file + ".bk")
   #new_file = dump_file()
@@ -119,7 +124,8 @@ f = open(handle_file, 'r')
 handle_lines = f.readlines()
 f.close()
 
-handle_page = {}
+handle_page_name = {}
+handle_page_id= {}
 for handle_line in handle_lines:
   handle_line = handle_line.strip()
   parts = handle_line.split("|")
@@ -128,7 +134,9 @@ for handle_line in handle_lines:
     continue
   handle = parts[0]
   page_name = parts[1]
-  handle_page[handle] = page_name
+  page_id = parts[2]
+  handle_page_name[handle] = page_name
+  handle_page_id[handle] = page_id
 
 publish_file = sys.argv[2]
 f = open(publish_file, 'r')
@@ -148,9 +156,10 @@ for publish_line in publish_lines:
   handle = parts[0]
   title = parts[1]
   url = parts[2]
-  if handle in handle_page:
-    page_name = handle_page[handle]
-    write_to_facebook(page_name, title, url)
+  if handle in handle_page_name:
+    page_name = handle_page_name[handle]
+    page_id = handle_page_id[handle]
+    write_to_facebook(handle, page_name, page_id, title, url)
     output = handle + "~" + title + "~" + url + "\n"
     f.write(output)
 f.close()
