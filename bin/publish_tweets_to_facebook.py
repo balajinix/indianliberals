@@ -59,13 +59,12 @@ except:
         
   
 def write_to_facebook(handle, page_name, page_id, text, upload_link_url):
-  if "loksatta.com" in upload_link_url:
-      return
   global access_token
   graph = GraphAPI(access_token)
   #response = graph.get("/264547013954814/accounts")
   #pages = response['data']
   #print pages
+  count = 0
   #for page in pages:
   #if (page_name != page['name']):
   #  continue
@@ -106,8 +105,11 @@ def write_to_facebook(handle, page_name, page_id, text, upload_link_url):
             tf.close()
         if handle not in changed_handles:
             changed_handles.append(handle)
+        count += 1
         sleep_interval = randint(1,3)
         time.sleep(sleep_interval)
+        if (count > 200):
+          return
     #upload_hash[page_id] = link_id
   except:
     print "Unexpected error:", sys.exc_info()

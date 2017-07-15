@@ -1,9 +1,12 @@
 from os import listdir
 from os.path import isfile, join
 import sys
+from random import randint
 
 dirpath = sys.argv[1]
 handle_file = sys.argv[2]
+base_text_dirpath = sys.argv[3]
+agenda_text_dirpath = sys.argv[4]
 
 f = open(handle_file, 'r')
 handle_lines = f.readlines()
@@ -42,6 +45,9 @@ for filename in files:
     page_str += "Our Campaigns:<br/>\n"
     page_str += "</td></tr>"
     for k,v in handle_page_name.iteritems():
+        r = randint(2, 5)
+        if r > 3:
+            continue
         page_str += "<tr><td align=\"left\">"
         page_str += "<a href=\"" + "http://indianliberals.org/" + k + ".html" + "\">" + v + "</a><br/>\n"
         page_str += "</td></tr>"
@@ -50,6 +56,24 @@ for filename in files:
     page_str += "</td><td></td>"
     page_str += "<td valign=\"top\">"
     page_str += "<table>\n"
+
+    base_text = ""
+    if isfile(join(base_text_dirpath, filename)):
+        bfp = open(join(base_text_dirpath,filename),'r')
+        base_text_lines = bfp.readlines()
+        bfp.close()
+        for line in base_text_lines:
+            base_text += line
+            base_text += "<br/>"
+
+    agenda_text = ""
+    if isfile(join(agenda_text_dirpath, filename)):
+        afp = open(join(agenda_text_dirpath,filename),'r')
+        agenda_lines = afp.readlines()
+        afp.close()
+        for line in agenda_lines:
+            agenda_text += line
+            agenda_text += "<br/>"
 
     fp = open(join(dirpath + "/text/",filename),'r')
     handle = filename.replace('.txt','')
@@ -64,11 +88,21 @@ for filename in files:
     # header
     page_str += "<tr>\n"
     page_str += "<td>\n"
-    page_str += "<h2>" + page_name + "</h2><br/><br/>\n"
+    page_str += "<h2>" + page_name + "</h2>\n"
+    if len(base_text) > 0:
+    	page_str += base_text
+    if len(agenda_text) > 0:
+    	page_str += "<h3>Liberal Agenda:</h3>\n"
+    	page_str += agenda_text
     page_str += "<h3>" + "News relevant to this Campaign:" + "</h3>\n"
 
     lines = fp.readlines()
+    fp.close()
+    i = 0
     for line in reversed(lines):
+        i += 1
+        if i > 9:
+            break
         line = line.strip()
         parts = line.split('~')
         page_str += "<tr>\n"
