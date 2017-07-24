@@ -35,13 +35,12 @@ for filename in files:
     page_str = "<html><br/>\n"
     page_str += "<body>\n"
     page_str += "<table>\n"
-    page_str += "<td>"
     page_str += "<tr>"
-    page_str += "<td align=\"center\">"
+    page_str += "<td align=\"center\" valign=\"top\">"
     page_str += "<img src=\"https://liberalsin.files.wordpress.com/2016/05/liberals_logo.jpg\"></img><br/>\n"
     page_str += "<a href=\"" + "http://indianliberals.org" + "\">" + "Indian Liberals" + "</a><br/>\n"
     page_str += "<table>"
-    page_str += "<tr><td align=\"left\">"
+    page_str += "<tr><td align=\"left\" valign=\"top\">"
     page_str += "Our Campaigns:<br/>\n"
     page_str += "</td></tr>"
     for k,v in handle_page_name.iteritems():
@@ -55,7 +54,6 @@ for filename in files:
     page_str += "</table>"
     page_str += "</td><td></td>"
     page_str += "<td valign=\"top\">"
-    page_str += "<table>\n"
 
     base_text = ""
     if isfile(join(base_text_dirpath, filename)):
@@ -86,6 +84,7 @@ for filename in files:
     ofp = open(output_file_name,'w')
 
     # header
+    page_str += "<table>\n"
     page_str += "<tr>\n"
     page_str += "<td>\n"
     page_str += "<h2>" + page_name + "</h2>\n"
