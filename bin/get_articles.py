@@ -4,11 +4,13 @@ import sys
 if len(sys.argv) < 4:
   sys.exit()
 
+# this is the google news urls to get articles from
 url_file = sys.argv[1]
 f = open(url_file,'r')
 url_lines = f.readlines()
 f.close()
 
+# this file has the history of urls already considerd.
 log_file = sys.argv[2]
 f = open(log_file, 'r')
 log_lines = f.readlines()

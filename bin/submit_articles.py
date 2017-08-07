@@ -112,5 +112,5 @@ if __name__ == "__main__":
       page_name = handle_page_name[handle]
       page_id = handle_page_id[handle]
       select_to_write(handle, page_name, page_id, title, url)
-      sleep_interval = randint(5,30)
+      sleep_interval = randint(1,2)
       time.sleep(sleep_interval)
