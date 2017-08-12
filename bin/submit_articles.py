@@ -35,7 +35,7 @@ def connect_to_db(db_config_file):
   # prepare a cursor object using cursor() method
   cursor = db.cursor()
 
-def select_to_write(handle, page_name, page_id, text, upload_link_url):
+def select_to_write(handle, page_name, page_id, text, category_id, upload_link_url):
   global db
   global cursor
   if "loksatta.com" in upload_link_url:
@@ -52,7 +52,7 @@ def select_to_write(handle, page_name, page_id, text, upload_link_url):
     link_content = "This article is shared because it is relevant to our <a href=\"http://indianliberals.org/" + handle + "\">" + page_name + "</a> campaign."
     link_karma = 1.0
     link_votes = 1
-    link_category = 1
+    link_category = category_id
     link_status = 'new'
     link_author = 1
     link_tags = handle
@@ -80,6 +80,7 @@ if __name__ == "__main__":
   
   handle_page_name = {}
   handle_page_id= {}
+  handle_category_id= {}
   for handle_line in handle_lines:
     handle_line = handle_line.strip()
     parts = handle_line.split("|")
@@ -89,8 +90,14 @@ if __name__ == "__main__":
     handle = parts[0]
     page_name = parts[1]
     page_id = parts[2]
+    category_id = parts[3]
+    if category_id is not None and len(category_id) > 0:
+        category_id = int(category_id)
+    else:
+        category_id = 1
     handle_page_name[handle] = page_name
     handle_page_id[handle] = page_id
+    handle_category_id[handle] = category_id
   
   publish_file = sys.argv[3]
   f = open(publish_file, 'r')
@@ -111,6 +118,7 @@ if __name__ == "__main__":
     if handle in handle_page_name:
       page_name = handle_page_name[handle]
       page_id = handle_page_id[handle]
-      select_to_write(handle, page_name, page_id, title, url)
+      category_id = handle_category_id[handle]
+      select_to_write(handle, page_name, page_id, title, category_id, url)
       sleep_interval = randint(1,2)
       time.sleep(sleep_interval)

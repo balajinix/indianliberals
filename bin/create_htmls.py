@@ -28,9 +28,11 @@ for handle_line in handle_lines:
 
 
 # now we are reading the file
-files = [f for f in listdir(dirpath + "/text/") if isfile(join(dirpath + "/text/", f))]
+#files = [f for f in listdir(dirpath + "/text/") if isfile(join(dirpath + "/text/", f))]
 
-for filename in files:
+for k,v in handle_page_name.iteritems():
+#for filename in files:
+    filename = k + ".txt"
     print filename
     page_str = "<html><br/>\n"
     page_str += "<body>\n"
@@ -73,7 +75,6 @@ for filename in files:
             agenda_text += line
             agenda_text += "<br/>"
 
-    fp = open(join(dirpath + "/text/",filename),'r')
     handle = filename.replace('.txt','')
     page_name = handle_page_name[handle]
     page_id = handle_page_id[handle]
@@ -93,10 +94,15 @@ for filename in files:
     if len(agenda_text) > 0:
     	page_str += "<h3>Liberal Agenda:</h3>\n"
     	page_str += agenda_text
-    page_str += "<h3>" + "News relevant to this Campaign:" + "</h3>\n"
 
-    lines = fp.readlines()
-    fp.close()
+    # if news articles exist, write them
+    lines = []
+    if isfile(join(dirpath + "/text/", filename)):
+        fp = open(join(dirpath + "/text/",filename),'r')
+        lines = fp.readlines()
+        fp.close()
+    if len(lines) > 0:
+        page_str += "<h3>" + "News relevant to this Campaign:" + "</h3>\n"
     i = 0
     for line in reversed(lines):
         i += 1

@@ -1,2 +1,2 @@
-echo "python ./publish_facebook.py ../input/facebook_pages.txt ../input/published_tweets.txt ../logs/log.txt ../logs/changed_files.txt"
-python ./publish_facebook.py ../input/facebook_pages.txt ../input/published_tweets.txt ../logs/log.txt ../logs/changed_files.txt
+echo "python ./publish_facebook.py ../input/content_map.txt ../logs/published_tweets.txt ../logs/log.txt ../logs/changed_files.txt"
+python ./publish_facebook.py ../input/content_map.txt ../logs/published_tweets.txt ../logs/log.txt ../logs/changed_files.txt

@@ -30,6 +30,10 @@ def write_to_facebook(handle, page_name, page_id):
   graph = GraphAPI(access_token)
   response = graph.get("/" + page_id + "/?fields=access_token")
   page_access_token = response['access_token']
+  tf = open("../input/page_access_tokens", "a+")
+  output = page_name + "|" + page_id + "|" + page_access_token + "\n"
+  tf.write(output)
+  tf.close()
   r = ''
   try:
     #print page_name + '\t' + page_id + '\t' + page_access_token
@@ -75,7 +79,7 @@ handle_page_id= {}
 for handle_line in handle_lines:
   handle_line = handle_line.strip()
   parts = handle_line.split("|")
-  if len(parts) != 3:
+  if len(parts) != 4:
     print "Invalid entry", handle_line
     continue
   handle = parts[0]

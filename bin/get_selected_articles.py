@@ -101,7 +101,7 @@ for handle_line in handle_lines:
   handle = parts[0]
   page_name = parts[1]
   page_id = parts[2]
-  feed_url = parts[3]
+  feed_url = "http://indianliberals.org/share/rss/category/" + parts[3]
   handle_page_name[handle] = page_name
   handle_page_id[handle] = page_id
   read_feeds(handle, page_name, page_id, feed_url)

@@ -1,2 +1,2 @@
-echo "python ./publish_to_facebook.py ../input/facebook_pages.txt ../input/publish.txt"
-python ./publish_to_facebook.py ../input/facebook_pages.txt ../input/publish.txt
+echo "python ./publish_to_facebook.py ../input/content_map.txt ../logs/publish.txt"
+python ./publish_to_facebook.py ../input/content_map.txt ../logs/publish.txt
