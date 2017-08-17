@@ -84,7 +84,7 @@ if __name__ == "__main__":
   for handle_line in handle_lines:
     handle_line = handle_line.strip()
     parts = handle_line.split("|")
-    if len(parts) != 3:
+    if len(parts) != 4:
       print "Invalid entry", handle_line
       continue
     handle = parts[0]
