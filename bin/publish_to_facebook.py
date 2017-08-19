@@ -2,7 +2,7 @@
 
 from facepy import GraphAPI
 import sys
-import urllib3
+#import urllib3
 import urllib2
 import datetime
 import time
@@ -10,20 +10,87 @@ from random import randint
 from shutil import copyfile
 
 
-urllib3.disable_warnings()
+#urllib3.disable_warnings()
 
 debug = True
 
 access_token = ""
 try:
-  with open('../input/access_token.txt') as f:
+  with open('../input/short_lived_access_token.txt') as f:
     lines = f.readlines()
     access_token = lines[0].strip()
 except:
-  print "Error geting access token"
-  sys.exit()
+  try:
+    with open('../input/access_token.txt') as f:
+      lines = f.readlines()
+      access_token = lines[0].strip()
+  except:
+    print "Error geting access token"
+    sys.exit()
 
 changed_handles = []
+
+def load_liberal_agenda(handle):
+    return_agenda = ""
+    agenda_file = "../input/agenda/" + handle + ".txt"
+
+    if '_liberals' not in handle:
+        return ""
+
+    try:
+        tf = open(agenda_file, "a+")
+    except:
+        print "Error opening file for append", agenda_file
+        return ""
+
+    tf_lines = tf.readlines()
+    tf.close()
+    cf_lines = []
+    try:
+        # refresh liberal agenda file
+        cf = open("../input/agenda/liberal_agenda.txt")
+        cf_lines = cf.readlines()
+    except:
+        print "Error opening liberal agenda file"
+
+    agenda_map = {}
+    if len(cf_lines) > len(tf_lines):
+        for line in cf_lines:
+            agenda = line.strip()
+            time_count = "0"
+            agenda_map[agenda] = time_count
+
+    agenda_list = [] # used to randomly pick
+
+    for line in tf_lines:
+        line = line.strip()
+        parts = line.split("~")
+        if len(parts) < 2:
+            continue
+        agenda = parts[0]
+        time_count = parts[1]
+        agenda_map[agenda] = time_count
+
+    for k, v in agenda_map.items():
+        if v == "0":
+            agenda_list.append(k)
+
+    # this is where we choose the return agenda
+    return_agenda_index = randint(0,len(agenda_list)-1)
+    return_agenda = agenda_list[return_agenda_index]
+    if return_agenda_index >= len(agenda_map):
+        print "agenda map corruption?"
+        return ""
+    agenda_map[return_agenda] = "1"
+
+    # write updated file
+    tf = open(agenda_file, "w")
+    for k, v in agenda_map.items():
+        output = k + "~" + v + "\n"
+        tf.write(output)
+    tf.close()
+
+    return return_agenda
 
 def write_to_facebook(handle, page_name, page_id):
   global access_token
@@ -38,29 +105,36 @@ def write_to_facebook(handle, page_name, page_id):
   try:
     #print page_name + '\t' + page_id + '\t' + page_access_token
     tweet_file = "../output/temp/" + handle + ".txt"
+    write_lines = []
     try:
         tf = open(tweet_file, "r")
+        write_lines = tf.readlines()
+        tf.close()
     except:
-        print "File not found?", tweet_file
-        return
-    write_lines = tf.readlines()
-    tf.close()
+        #print "File not found?", tweet_file
+        liberal_agenda = load_liberal_agenda(handle)
+        parts = liberal_agenda.split("|")
+        if len(parts) == 2:
+            text = "#LiberalAgenda " + parts[1]
+            upload_link_url = "http://indianliberals.org/" + parts[0] + ".html"
+            liberal_agenda = text + "~" + upload_link_url
+            write_lines.append(liberal_agenda)
+
     for line in write_lines:
         parts = line.split("~")
         if len(parts) < 2:
             continue
         text = parts[0]
         upload_link_url = parts[1]
-    	print page_name
     	print text
-    	print upload_link_url
+        print upload_link_url
         print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)
         path_string = "%s/feed" % page_id
         page_graph = GraphAPI(page_access_token)
-        r = page_graph.post(path=path_string, link=upload_link_url, name=text)
+        r = page_graph.post(path=path_string, link=upload_link_url, message=text)
         link_id = r['id'] 
-        print 'Success: posted link with id: ' + link_id
-        sleep_interval = randint(5,30)
+        print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
+        sleep_interval = randint(2,3)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()

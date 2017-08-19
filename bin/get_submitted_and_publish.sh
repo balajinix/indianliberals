@@ -7,3 +7,5 @@ echo "python ./get_selected_articles.py ../input/content_map.txt ../logs/log.txt
 python ./get_selected_articles.py ../input/content_map.txt ../logs/log.txt ../logs/changed_files.txt
 echo "python ./publish_to_facebook.py ../input/content_map.txt ../logs/publish.txt"
 python ./publish_to_facebook.py ../input/content_map.txt ../logs/publish.txt
+echo "rm ../input/short_lived_access_token.txt"
+rm ../input/short_lived_access_token.txt
