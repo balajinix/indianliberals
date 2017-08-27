@@ -15,18 +15,21 @@ from shutil import copyfile
 debug = True
 
 access_token = ""
+short_lived_access_token = ""
 try:
   with open('../input/short_lived_access_token.txt') as f:
     lines = f.readlines()
+    short_lived_access_token = lines[0].strip()
+except:
+    print "Error geting access token"
+
+try:
+  with open('../input/access_token.txt') as f:
+    lines = f.readlines()
     access_token = lines[0].strip()
 except:
-  try:
-    with open('../input/access_token.txt') as f:
-      lines = f.readlines()
-      access_token = lines[0].strip()
-  except:
-    print "Error geting access token"
-    sys.exit()
+  print "Error geting access token"
+  sys.exit()
 
 changed_handles = []
 
@@ -94,9 +97,19 @@ def load_liberal_agenda(handle):
 
 def write_to_facebook(handle, page_name, page_id):
   global access_token
-  graph = GraphAPI(access_token)
-  response = graph.get("/" + page_id + "/?fields=access_token")
-  page_access_token = response['access_token']
+  global short_lived_access_token
+  page_access_token = ""
+  try:
+    graph = GraphAPI(short_lived_access_token)
+    response = graph.get("/" + page_id + "/?fields=access_token")
+    page_access_token = response['access_token']
+  except:
+    try:
+      graph = GraphAPI(access_token)
+      response = graph.get("/" + page_id + "/?fields=access_token")
+      page_access_token = response['access_token']
+    except:
+      return
   tf = open("../input/page_access_tokens", "a+")
   output = page_name + "|" + page_id + "|" + page_access_token + "\n"
   tf.write(output)
