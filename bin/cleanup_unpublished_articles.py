@@ -26,7 +26,8 @@ def cleanup_db(db_config_file):
   # prepare a cursor object using cursor() method
   cursor = db.cursor()
 
-  cursor.execute('''delete from kliqqi_links where link_author=1 and link_status=%s''', 'new')
+  cursor.execute("delete from kliqqi_links where link_status='new'")
+  print "affected rows = {}".format(cursor.rowcount)
   db.commit()
 
 if len(sys.argv) < 4:

@@ -16,7 +16,7 @@ debug = True
 
 access_token = ""
 try:
-  with open('../input/short_lived_access_token.txt') as f:
+  with open('../input/access_token.txt') as f:
     lines = f.readlines()
     access_token = lines[0].strip()
 except:
@@ -36,8 +36,22 @@ def write_to_facebook(handle, page_name, page_id):
   tf.close()
   r = ''
   try:
-        upload_link_url = "http://indianliberals.org/share/" + handle
-        text = "We invite you to share blog posts and news articles on our webpage. " + upload_link_url
+        #upload_link_url = "http://indianliberals.org/share/" + handle
+        #text = "We invite you to share blog posts and news articles on our webpage. " + upload_link_url
+        #upload_link_url = "http://indianliberals.org/" + handle.strip() + ".html"
+        #text = "We've improved our campaign web page. Checkout! " + upload_link_url 
+        #upload_link_url = "http://facebook.com/%s" % (page_id)
+        #text = "You are welcome to post your views and links on our facebook page."
+        #upload_link_url = "http://indianliberals.org/books.html"
+        #text = "We want to recommend a book reading list for Liberals. Send us your suggestions!"
+
+        #response = graph.get("/" + page_id + "/?fields=link")
+        #page_link = response['link']
+        #upload_link_url = page_link
+        #text = "Our Facebook page: " + page_link
+
+        upload_link_url = "https://www.newsgram.com/swarna-bharat-party-looking-for-candidates-to-fight-2019-elections/"
+        text = "Want to contest elections? Swarna Bharat Party is looking for candidates to fight 2019 Lok Sabha Elections."
     	print text
         print upload_link_url
         print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)
@@ -48,7 +62,7 @@ def write_to_facebook(handle, page_name, page_id):
         #  r = page_graph.post(path=path_string, name=text)
         link_id = r['id'] 
         print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
-        sleep_interval = randint(2,3)
+        sleep_interval = randint(8,12)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()

@@ -78,6 +78,12 @@ def load_liberal_agenda(handle):
         if v == "0":
             agenda_list.append(k)
 
+    # if agenda_list is empty, we have the exhaused list. need to reset
+    if len(agenda_list) < 1:
+        for k, v in agenda_map.items():
+            agenda_list.append(k)
+            agenda_map[k] = "0"
+
     # this is where we choose the return agenda
     return_agenda_index = randint(0,len(agenda_list)-1)
     return_agenda = agenda_list[return_agenda_index]
@@ -96,6 +102,8 @@ def load_liberal_agenda(handle):
     return return_agenda
 
 def write_to_facebook(handle, page_name, page_id):
+  if 'indian_liberals' == handle:
+    return
   global access_token
   global short_lived_access_token
   page_access_token = ""
@@ -124,7 +132,7 @@ def write_to_facebook(handle, page_name, page_id):
         write_lines = tf.readlines()
         tf.close()
     except:
-        #print "File not found?", tweet_file
+        print "File not found?", tweet_file
         liberal_agenda = load_liberal_agenda(handle)
         parts = liberal_agenda.split("|")
         if len(parts) == 2:
@@ -136,6 +144,7 @@ def write_to_facebook(handle, page_name, page_id):
     for line in write_lines:
         parts = line.split("~")
         if len(parts) < 2:
+            print "Error: need text and url to publish to facebook\n"
             continue
         text = parts[0]
         upload_link_url = parts[1]
@@ -147,7 +156,7 @@ def write_to_facebook(handle, page_name, page_id):
         r = page_graph.post(path=path_string, link=upload_link_url, message=text)
         link_id = r['id'] 
         print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
-        sleep_interval = randint(2,3)
+        sleep_interval = randint(8,12)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()
