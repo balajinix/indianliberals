@@ -107,10 +107,10 @@ def read_articles(db_config_file):
     link_tags = result[5]
     link_id = result[6]
     if not is_ascii(link_title):
-      continue
       cursor.execute("update kliqqi_links set link_status='discard' where link_id=" + str(link_id))
       cursor.execute("update kliqqi_links set link_published_date = link_modified where link_id=" + str(link_id))
       db.commit()
+      continue
 
     tld = get_tld(link_url)
     last_d = tld.split('.')[-1]
@@ -129,6 +129,10 @@ def read_articles(db_config_file):
             if part not in title:
               flag = False
               break
+         # custom
+         if 'siddaramaiah' in title:
+           if 'bjp' in title or 'yeddyurappa' in title or 'gowda' in title or 'kumaraswamy' in title:
+              flag = False
          if flag == True:
            print(result)
            cursor.execute("update kliqqi_links set link_status='published' where link_id=" + str(link_id))

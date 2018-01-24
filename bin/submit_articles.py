@@ -61,7 +61,7 @@ def select_to_write(handle, page_name, page_id, text, category_id, upload_link_u
     db.commit()
   except:
     print "Unexpected error:", sys.exc_info()
-    sys.exit()
+    return
 
 
 if __name__ == "__main__":

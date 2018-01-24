@@ -36,8 +36,8 @@ def write_to_facebook(handle, page_name, page_id):
   tf.close()
   r = ''
   try:
-        #upload_link_url = "http://indianliberals.org/share/" + handle
-        #text = "We invite you to share blog posts and news articles on our webpage. " + upload_link_url
+        upload_link_url = "http://indianliberals.org/share/" + handle
+        text = "We invite you to share blog posts and news articles on our webpage. " + upload_link_url
         #upload_link_url = "http://indianliberals.org/" + handle.strip() + ".html"
         #text = "We've improved our campaign web page. Checkout! " + upload_link_url 
         #upload_link_url = "http://facebook.com/%s" % (page_id)
@@ -50,8 +50,8 @@ def write_to_facebook(handle, page_name, page_id):
         #upload_link_url = page_link
         #text = "Our Facebook page: " + page_link
 
-        upload_link_url = "https://www.newsgram.com/swarna-bharat-party-looking-for-candidates-to-fight-2019-elections/"
-        text = "Want to contest elections? Swarna Bharat Party is looking for candidates to fight 2019 Lok Sabha Elections."
+        #upload_link_url = "https://www.newsgram.com/swarna-bharat-party-looking-for-candidates-to-fight-2019-elections/"
+        #text = "Want to contest elections? Swarna Bharat Party is looking for candidates to fight 2019 Lok Sabha Elections."
     	print text
         print upload_link_url
         print "posting to %s at url http://facebook.com/%s" % (page_name, page_id)

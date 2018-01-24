@@ -156,7 +156,7 @@ def write_to_facebook(handle, page_name, page_id):
         r = page_graph.post(path=path_string, link=upload_link_url, message=text)
         link_id = r['id'] 
         print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
-        sleep_interval = randint(8,12)
+        sleep_interval = randint(40,140)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()

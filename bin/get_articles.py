@@ -1,6 +1,19 @@
 import feedparser
 import sys
 
+def is_ascii(text):
+    if isinstance(text, unicode):
+        try:
+            text.encode('ascii')
+        except UnicodeEncodeError:
+            return False
+    else:
+        try:
+            text.decode('ascii')
+        except UnicodeDecodeError:
+            return False
+    return True  
+
 if len(sys.argv) < 4:
   sys.exit()
 
@@ -39,10 +52,12 @@ for url_line in url_lines:
   url = parts[1]
   d = feedparser.parse(url)
   for post in d.entries:
-    post_link = post.link.split("=")[-1]
+    if not is_ascii(post.title):
+      continue
     if post.title in log_title.keys():
       #print post.title, "already present in log. Ignored."
       continue
+    post_link = post.link.split("=")[-1]
     if post_link in log_url.keys():
       #print post_link, "already present in log. Ignored."
       continue
