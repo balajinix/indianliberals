@@ -132,7 +132,13 @@ def read_articles(db_config_file):
          # custom
          if 'siddaramaiah' in title:
            if 'bjp' in title or 'yeddyurappa' in title or 'gowda' in title or 'kumaraswamy' in title:
-              flag = False
+             flag = False
+         if 'chidambaram' in title:
+           if 'karti' in title:
+             flag = False
+         if 'kashmir' in title:
+           if 'army' in title or 'kill' in title or 'snow' in title or 'temperature' in title:
+             flag = False
          if flag == True:
            print(result)
            cursor.execute("update kliqqi_links set link_status='published' where link_id=" + str(link_id))
