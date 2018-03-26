@@ -3,27 +3,29 @@ from nltk.stem.lancaster import LancasterStemmer
 import os
 import json
 import datetime
+import codecs
+import json
 stemmer = LancasterStemmer()
 
 words = []
 classes = []
 documents = []
 
-def train_classifier():
+def train_classifier(training_data_file, synapse_file):
     global words
     global classes
     global documents
-    # 3 classes of training data
     training_data = []
-    training_data.append({"class":"publish", "sentence":"Arunachal passes bills to streamline Panchayati Raj, regulate money lending - Hindustan Times"})
-    training_data.append({"class":"publish", "sentence":"Modi running government like an event management exercise, says Siddaramaiah - The Hindu"})
-    training_data.append({"class":"publish", "sentence":"Why Siddaramaiah raised issue of federalism and flag on Facebook post - DailyO"})
-    training_data.append({"class":"publish", "sentence":"Nitish Kumar: Bihar 2019: 4 partners, 40 seats and a big problem in ... - Economic Times"})
-    
-    training_data.append({"class":"discard", "sentence":"Experimental obesity drug may prevent kidney stones: study - Times of India"})
-    training_data.append({"class":"discard", "sentence":"Darbhanga beheading: Political rivalry or personal vendetta? - NewsBytes"})
-    training_data.append({"class":"discard", "sentence":"Jagmeet Singh says Canada should declare 1984 anti-Sikh violence in India a genocide - Toronto Star"})
-    training_data.append({"class":"discard", "sentence":"Mukesh Ambani says Jio was seeded by daughter Isha in 2011 - Times of India"})
+    f = codecs.open(training_data_file, 'r', 'utf-8')
+    lines = f.readlines()
+    f.close()
+    for line in lines:
+        line = line.strip()
+        try:
+            json_line = json.loads(line)
+        except:
+            continue
+        training_data.append(json_line)
     
     print ("%s sentences in training data" % len(training_data))
     
@@ -32,7 +34,7 @@ def train_classifier():
     # loop through each sentence in our training data
     for pattern in training_data:
         # tokenize each word in the sentence
-        w = nltk.word_tokenize(pattern['sentence'])
+        w = nltk.word_tokenize(pattern['text'])
         # add to our words list
         words.extend(w)
         # add to documents in our corpus
@@ -48,9 +50,9 @@ def train_classifier():
     # remove duplicates
     classes = list(set(classes))
     
-    print (len(documents), "documents")
-    print (len(classes), "classes", classes)
-    print (len(words), "unique stemmed words", words)
+    #print (len(documents), "documents")
+    #print (len(classes), "classes", classes)
+    #print (len(words), "unique stemmed words", words)
     
     # create our training data
     training = []
@@ -184,33 +186,17 @@ def train(X, y, hidden_neurons=10, alpha=1, epochs=50000, dropout=False, dropout
                'words': words,
                'classes': classes
               }
-    synapse_file = "synapses.json"
 
     with open(synapse_file, 'w') as outfile:
         json.dump(synapse, outfile, indent=4, sort_keys=True)
     print ("saved synapses to:", synapse_file)
 
 
-train_classifier()
+import sys
 
-# probability threshold
-ERROR_THRESHOLD = 0.2
-# load our calculated synapse values
-synapse_file = 'synapses.json' 
-with open(synapse_file) as data_file: 
-    synapse = json.load(data_file) 
-    synapse_0 = np.asarray(synapse['synapse0']) 
-    synapse_1 = np.asarray(synapse['synapse1'])
+if len(sys.argv) < 3:
+    sys.exit(0)
 
-def classify(sentence, show_details=False):
-    results = think(sentence, show_details)
-
-    results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD ] 
-    results.sort(key=lambda x: x[1], reverse=True) 
-    return_results =[[classes[r[0]],r[1]] for r in results]
-    print ("%s \n classification: %s" % (sentence, return_results))
-    return return_results
-
-classify("Karnataka government: Have power to consider demand for minority tag - The New Indian Express")
-print()
-
+training_data_file = sys.argv[1]
+synapses_file = sys.argv[2]
+train_classifier(training_data_file, synapses_file)
