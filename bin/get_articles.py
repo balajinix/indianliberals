@@ -1,4 +1,6 @@
 import feedparser
+# Author - Balaji Ganesan
+# Email - balajinix@gmail.com
 import sys
 
 def is_ascii(text):

@@ -53,7 +53,7 @@ def read_feeds(handle, page_name, page_id, feed_url):
       temp_file = "../output/temp/" + handle + ".txt"
       tf = open(temp_file, "a+")
       try:
-          output = text + "~" + upload_link_url + "~" + page_name + "~" + page_id + "\n"
+          output = text + "~" + source_link_url + "~" + page_name + "~" + page_id + "\n"
           tf.write(output)
           tf.close()
       except:

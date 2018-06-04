@@ -12,28 +12,43 @@ import sys
 import time
 from random import randint
 
+def is_ascii(text):
+    if isinstance(text, unicode):
+        try:
+            text.encode('ascii')
+        except UnicodeEncodeError:
+            return False
+    else:
+        try:
+            text.decode('ascii')
+        except UnicodeDecodeError:
+            return False
+    return True  
+
 def search_and_publish(handle, search_term, f, api):
     output_map = {}
     search = api.GetSearch(term=search_term, lang='en', result_type='recent', count=200, max_id='')
-    append_url = " http://indianliberals.org"
-    append_handle = " @joinLiberals"
     for t in search:
       #print t.user.screen_name + ' (' + t.created_at + ')'
       screen_name = t.user.screen_name
+      if not is_ascii(t.text):
+          continue
       tweet = t.text.encode('utf-8')
-      if "RT @" in tweet:
+      if "RT " in tweet:
           continue
       follower_count = int(t.user.followers_count)
-      if follower_count < 2000:
+      if follower_count < 50:
           continue
       try:
-          retweet = t["retweeted_status"]
-          continue
+          retweet = t.retweeted_status
+          if retweet:
+              continue
       except:
           retweet = ""
       try:
-          reply = t["in_reply_to_screen_name"]
-          continue
+          reply = t.in_reply_to_screen_name
+          if reply:
+              continue
       except:
           retweet = ""
       try:
@@ -42,12 +57,49 @@ def search_and_publish(handle, search_term, f, api):
               continue
       except:
           default_profile = False
-    
+      tweet = tweet.replace("\n", " ")
+      tweeted_url = ""
+      twitter_short_url = ""
+      try:
+          if "t.co" not in tweet:
+             continue
+          tweeted_urls = t.urls
+          for turl in tweeted_urls:
+              tweeted_url = turl.expanded_url
+              twitter_short_url = turl.url
+              if len(tweeted_url) > 3:
+                  break
+      except:
+          dummy = ""
+      if len(tweeted_url) < 3:
+           continue
+      if len(twitter_short_url) > 3 and twitter_short_url in tweet:
+          tweet = tweet.replace(twitter_short_url, "")
+          tweet = tweet.strip()
+
+      if "http" in tweet:
+          continue
+
+      if tweet in log_title.keys():
+          #print post.title, "already present in log. Ignored."
+          continue
+      tweet_url = "https://twitter.com/" + screen_name + "/status/" + t.id_str
+      if tweet_url in log_url.keys():
+          #print post_link, "already present in log. Ignored."
+          continue
+      if tweeted_url in log_url.keys():
+          #print post_link, "already present in log. Ignored."
+          continue
+
+      #print post.title + ": " + post_link
+      output = handle + "~" + "RT @" + screen_name + " " + tweet + "~" + tweeted_url + "\n"
+      f.write(output.encode('utf8'))
+      continue
+
       #try:
       #   retweet_count = t["retweet_count"]
       #except:
           #continue
-      tweet_url = "https://twitter.com/" + screen_name + "/status/" + t.id_str
       if tweet not in output_map:
           tweet = tweet.strip()
           tweet = tweet.replace("\n", " ")
@@ -56,6 +108,7 @@ def search_and_publish(handle, search_term, f, api):
               f.write(handle + "~" + "RT @" + screen_name + " " + tweet + "~" + tweet_url + "\n")
           except:
               continue
+
       continue
     
       if screen_name in upload_hash:
@@ -75,6 +128,9 @@ def search_and_publish(handle, search_term, f, api):
         if debug is True:
           print "No tweet category for: ", tweet
         continue
+
+      append_url = " http://indianliberals.org"
+      append_handle = " @joinLiberals"
     
       if tweet_category in messages:
         base_response = "@" + t.user.screen_name + " " + messages[tweet_category]

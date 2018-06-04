@@ -40,6 +40,8 @@ def select_to_write(handle, page_name, page_id, text, category_id, upload_link_u
   global cursor
   if "loksatta.com" in upload_link_url:
       return
+  if "nagaland post" in text.lower():
+      return
   r = ''
   try:
     print page_name

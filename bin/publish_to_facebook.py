@@ -133,13 +133,13 @@ def write_to_facebook(handle, page_name, page_id):
         tf.close()
     except:
         print "File not found?", tweet_file
-        liberal_agenda = load_liberal_agenda(handle)
-        parts = liberal_agenda.split("|")
-        if len(parts) == 2:
-            text = "#LiberalAgenda " + parts[1]
-            upload_link_url = "http://indianliberals.org/" + parts[0] + ".html"
-            liberal_agenda = text + "~" + upload_link_url
-            write_lines.append(liberal_agenda)
+        #liberal_agenda = load_liberal_agenda(handle)
+        #parts = liberal_agenda.split("|")
+        #if len(parts) == 2:
+        #    text = "#LiberalAgenda " + parts[1]
+        #    upload_link_url = "http://indianliberals.org/" + parts[0] + ".html"
+        #    liberal_agenda = text + "~" + upload_link_url
+        #    write_lines.append(liberal_agenda)
 
     for line in write_lines:
         parts = line.split("~")
@@ -156,7 +156,7 @@ def write_to_facebook(handle, page_name, page_id):
         r = page_graph.post(path=path_string, link=upload_link_url, message=text)
         link_id = r['id'] 
         print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
-        sleep_interval = randint(40,140)
+        sleep_interval = randint(40,60)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()

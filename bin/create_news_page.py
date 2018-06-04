@@ -2,6 +2,8 @@ from os import listdir
 from os.path import isfile, join
 import sys
 from random import randint
+from collections import OrderedDict
+import os
 
 dirpath = sys.argv[1]
 handle_file = sys.argv[2]
@@ -65,8 +67,8 @@ page_str += "  };"
 page_str += ""
 page_str += "  return t;"
 page_str += "}(document, \"script\", \"twitter-wjs\"));</script>"
-page_str += "<table>\n"
-page_str += "<tr>"
+#page_str += "<table>\n"
+#page_str += "<tr>"
 # table for campaigns start
 #page_str += "<table>"
 #page_str += "<tr><td align=\"left\" valign=\"top\">"
@@ -81,7 +83,7 @@ page_str += "<tr>"
 #page_str += "</td></tr>"
 #page_str += "</table>"
 # table for campaigns end
-page_str += "<td valign=\"top\">"
+#page_str += "<td valign=\"top\">"
 
 base_text = ""
 if isfile(join(base_text_dirpath, filename)):
@@ -108,6 +110,18 @@ if isfile(join(agenda_text_dirpath, filename)):
         agenda_text += parts[1]
         agenda_text += "<br/>"
 
+print_dict = {}
+for k,v in handle_page_name.iteritems():
+    lines = []
+    if isfile(join(dirpath + "/text/", k + ".txt")):
+        fp = open(join(dirpath + "/text/", k + ".txt"),'r')
+        lines = fp.readlines()
+        fp.close()
+        print_dict[k] = os.path.getmtime(join(dirpath + "/text/", k + ".txt"))
+    else:
+        print_dict[k] = 0
+ordered_print_dict = OrderedDict(sorted(print_dict.items(), key=lambda t: t[1], reverse=True))
+
 handle = "indian_liberals"
 page_name = handle_page_name[handle]
 page_id = handle_page_id[handle]
@@ -119,7 +133,7 @@ ofp = open(output_file_name,'w')
 
 # header
 # table for agenda etc begins
-page_str += "<table>\n"
+page_str += "<table width=\"100%\">\n"
 page_str += "<tr>\n"
 page_str += "<td>\n"
 page_str += "<h2 align=\"center\">news.indianliberals.org</h2>\n"
@@ -144,16 +158,16 @@ page_str += "</script>"
 page_str += "<gcse:searchbox-only></gcse:searchbox-only>"
 page_str += "<br/>"
 
-page_str += "<table>\n"
+page_str += "<table width=\"100%\">\n"
 # if news articles exist, write them
 m = 0
 page_str += "<tr>\n"
-page_str += "<td align=\"center\" valign=\"top\">"
+page_str += "<td align=\"center\" valign=\"top\" width=\"33%\">"
 page_str += "<a href=\"http://indianliberals.org\"><img src=\"https://liberalsin.files.wordpress.com/2016/05/liberals_logo.jpg\"></img></a><br/>\n"
 page_str += "<a href=\"" + "https://en.wikipedia.org/wiki/Swatantra_Party" + "\">" + "Swatantra Party Flag" + "</a>`\n"
 page_str += "</td>"
 m += 1
-for k,v in handle_page_name.iteritems():
+for k in ordered_print_dict.keys():
     lines = []
     if isfile(join(dirpath + "/text/", k + ".txt")):
         fp = open(join(dirpath + "/text/", k + ".txt"),'r')
@@ -163,12 +177,12 @@ for k,v in handle_page_name.iteritems():
         m += 1
         if m == 1:
              page_str += "<tr>\n"
-        page_str += "<td>\n"
+        page_str += "<td width=\"33%\">\n"
         i = 0
-        page_str += "<table>\n"
+        page_str += "<table width=\"100%\">\n"
         page_str += "<tr>\n"
         page_str += "<td valign=\"top\">\n"
-        page_str += "<h3>" + "<a href=\"http://www.indianliberals.org/" + k + ".html\">" + v + "</a>\n"
+        page_str += "<h3>" + "<a href=\"http://www.indianliberals.org/" + k + ".html\">" + handle_page_name[k] + "</a> </h3>\n"
         page_str += "</td>\n"
         page_str += "</tr>\n"
         for line in reversed(lines):
@@ -182,8 +196,15 @@ for k,v in handle_page_name.iteritems():
             page_str += "<a href=\"" + parts[1] + "\">" + parts[0] + "</a><br/>\n"
             page_str += "</td>\n"
             page_str += "</tr>\n"
+        page_str += "</table>\n"
+        page_str += "<table width=\"100%\">\n"
         page_str += "<tr>\n"
-        page_str += "<td align=\"right\">\n"
+        page_str += "<td align=\"left\" width=\"33\">\n"
+        page_str += "<a href=\"http://twitter.com/" + k + "\">Follow >>></a>"
+        page_str += "</td>\n"
+        page_str += "<td align=\"left\" width=\"33\">\n"
+        page_str += "</td>\n"
+        page_str += "<td align=\"left\" width=\"33\">\n"
         page_str += "<a href=\"http://www.indianliberals.org/share/" + k + "\">Read more >>></a>\n"
         page_str += "</td>\n"
         page_str += "</tr>\n"
@@ -221,11 +242,11 @@ page_str += "</td>"
 page_str += "</tr>"
 page_str += "</table>\n"
 
-page_str += "</td>\n"
-page_str += "<td>\n"
-page_str += "</td>\n"
-page_str += "</tr>\n"
-page_str += "</table>\n"
+#page_str += "</td>\n"
+#page_str += "<td>\n"
+#page_str += "</td>\n"
+#page_str += "</tr>\n"
+#page_str += "</table>\n"
 
 page_str += "<table width=\"100%\">\n"
 page_str += "<tr>\n"
