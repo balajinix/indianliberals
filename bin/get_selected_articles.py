@@ -10,6 +10,7 @@ from random import randint
 from shutil import copyfile
 import feedparser
 from urllib import urlopen
+import codecs
 
 urllib3.disable_warnings()
 
@@ -41,7 +42,7 @@ def read_feeds(handle, page_name, page_id, feed_url):
       #print upload_link_url
       text = text.strip()
       tweet_file = "../output/text/" + handle + ".txt"
-      tf = open(tweet_file, "a+")
+      tf = codecs.open(tweet_file, 'a+', 'utf-8')
       try:
           output = text + "~" + source_link_url + "~" + page_name + "~" + page_id + "\n"
           tf.write(output)
@@ -51,7 +52,7 @@ def read_feeds(handle, page_name, page_id, feed_url):
           tf.close()
       # temp
       temp_file = "../output/temp/" + handle + ".txt"
-      tf = open(temp_file, "a+")
+      tf = codecs.open(temp_file, 'a+', 'utf-8')
       try:
           output = text + "~" + source_link_url + "~" + page_name + "~" + page_id + "\n"
           tf.write(output)
@@ -75,7 +76,7 @@ f.close()
 
 # this file has the history of urls already considerd.
 log_file = sys.argv[2]
-f = open(log_file, 'r')
+f = codecs.open(log_file, 'r', 'utf-8')
 log_lines = f.readlines()
 f.close()
 

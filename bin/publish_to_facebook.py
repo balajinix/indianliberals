@@ -8,6 +8,7 @@ import datetime
 import time
 from random import randint
 from shutil import copyfile
+import codecs
 
 
 #urllib3.disable_warnings()
@@ -101,7 +102,7 @@ def load_liberal_agenda(handle):
 
     return return_agenda
 
-def write_to_facebook(handle, page_name, page_id):
+def write_to_facebook(handle, page_name, page_id, link_category, published_file):
   if 'indian_liberals' == handle:
     return
   global access_token
@@ -156,19 +157,28 @@ def write_to_facebook(handle, page_name, page_id):
         r = page_graph.post(path=path_string, link=upload_link_url, message=text)
         link_id = r['id'] 
         print 'Posted http://facebook.com/' + link_id + ' to ' + page_name
+        try:
+          pf = codecs.open(published_file, 'a+', 'utf-8')
+          published_output = handle + "~" + text + "~" + upload_link_url + "~" + link_category + "\n"
+          pf.write(published_output)
+          pf.close()
+        except:
+          print "Error publishing article to log: ", published_output
         sleep_interval = randint(40,60)
         time.sleep(sleep_interval)
   except:
     print "Unexpected error:", sys.exc_info()
     return
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
   sys.exit()
 
 handle_file = sys.argv[1]
 f = open(handle_file, 'r')
 handle_lines = f.readlines()
 f.close()
+
+published_file = sys.argv[2]
 
 handle_page_name = {}
 handle_page_id= {}
@@ -181,7 +191,8 @@ for handle_line in handle_lines:
   handle = parts[0]
   page_name = parts[1]
   page_id = parts[2]
+  link_category = parts[3]
   handle_page_name[handle] = page_name
   handle_page_id[handle] = page_id
-  write_to_facebook(handle, page_name, page_id)
+  write_to_facebook(handle, page_name, page_id, link_category, published_file)
 

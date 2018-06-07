@@ -11,6 +11,7 @@ from shutil import copyfile
 import feedparser
 from urllib import urlopen
 from tld import get_tld
+import codecs
 
 urllib3.disable_warnings()
 
@@ -39,7 +40,7 @@ def is_ascii(text):
             return False
     return True  
 
-def read_articles(db_config_file, output_file):
+def read_articles(db_config_file, output_file, published_file):
   global db
   global cursor
   global keywords_map
@@ -63,7 +64,8 @@ def read_articles(db_config_file, output_file):
 
   cursor.execute("select link_url, link_title, link_title_url, link_category, link_author, link_tags, link_id from kliqqi_links where link_status='published'")
  
-  tf = open(output_file, "w")
+  of = codecs.open(output_file, 'w', 'utf-8')
+  pf = codecs.open(published_file, 'w', 'utf-8')
   results = cursor.fetchall()
   for result in results:
     link_url = result[0]
@@ -77,16 +79,27 @@ def read_articles(db_config_file, output_file):
       log_title[link_title] = 0
     elif link_url in log_url.keys():
       log_title[link_title] = 0
-    output = "{\"class\":\"publish\", \"text\":\"" + link_title + "\"}\n"
-    tf.write(output)
+    try: 
+      output = "{\"class\":\"publish\", \"text\":\"" + link_title + "\"}\n"
+      of.write(output)
+    except:
+      continue
+    try: 
+      published_output = link_tags + "~" + link_title + "~" + link_url + "~" + str(link_category) + "\n"
+      pf.write(published_output)
+    except:
+      continue
 
   for k, v in log_title.items():
     if v == 1:
-      output = "{\"class\":\"discard\", \"text\":\"" + k + "\"}\n"
-      tf.write(output)
-  tf.close()
+      try: 
+        output = "{\"class\":\"discard\", \"text\":\"" + k + "\"}\n"
+        of.write(output)
+      except:
+        continue
+  of.close()
 
-if len(sys.argv) < 5:
+if len(sys.argv) < 7:
   sys.exit()
 
 handle_file = sys.argv[1]
@@ -127,5 +140,6 @@ for keywords_line in keywords_lines:
 
 db_config_file = sys.argv[3]
 output_file = sys.argv[5]
-read_articles(db_config_file, output_file)
+published_file = sys.argv[6]
+read_articles(db_config_file, output_file, published_file)
 db.close()
