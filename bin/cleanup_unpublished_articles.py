@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import sys
-
 import MySQLdb
 
 db = None
@@ -30,32 +29,10 @@ def cleanup_db(db_config_file):
   print "affected rows = {}".format(cursor.rowcount)
   db.commit()
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 2:
   print "Error"
   sys.exit()
 
-publish_file = sys.argv[1]
-f = open(publish_file, 'r')
-publish_lines = f.readlines()
-f.close()
-
-log_file = sys.argv[2]
-f = open(log_file, 'a')
-for publish_line in publish_lines:
-  publish_line = publish_line.strip()
-  parts = publish_line.split("~")
-  if len(parts) != 3:
-    print "Error - log file doesn't have 3 parts"
-    print parts
-    print len(parts)
-    continue
-  handle = parts[0]
-  title = parts[1]
-  url = parts[2]
-  output = handle + "~" + title + "~" + url + "\n"
-  f.write(output)
-f.close()
-
-db_config_file = sys.argv[3]
+db_config_file = sys.argv[1]
 cleanup_db(db_config_file)
 
